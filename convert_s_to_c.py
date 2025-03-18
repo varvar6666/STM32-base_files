@@ -16,13 +16,10 @@ def generate_c_file(handlers, c_file_path):
     with open(c_file_path, 'w') as c_file:
         # Записываем стандартный заголовок
         c_file.write("#include <stdint.h>\n\n")
-        c_file.write("void Default_Handler(void) {\n")
-        c_file.write("	while(1) {}\n")
-        c_file.write("}\n\n")
 
         # Генерируем weak-алиасы для обработчиков, исключая __end_stack и 0
         for handler in handlers:
-            if handler != "__end_stack" and handler != "0":
+            if handler != "__end_stack" and handler != "0" and handler != "_estack":
                 c_file.write(f"void {handler}(void)						__attribute__ ((weak, alias(\"Default_Handler\")));\n")
         
         # Генерируем таблицу векторов прерываний
@@ -30,8 +27,8 @@ def generate_c_file(handlers, c_file_path):
         c_file.write("uint32_t vector_table[] = {\n")
         
         # Первый элемент — __end_stack
-        if handlers and handlers[0] == "__end_stack":
-            c_file.write(f"    (uint32_t) {handlers[0]},\n")
+        if handlers and ( handlers[0] == "__end_stack" or handlers[0] == "_estack"):
+            c_file.write(f"    (uint32_t) __end_stack,\n")
             handlers = handlers[1:]  # Убираем __end_stack из списка обработчиков
         
         # Остальные элементы таблицы
@@ -50,7 +47,7 @@ def process_directory(src_dir, dst_dir):
                 s_file_path = os.path.join(root, file)
                 relative_path = os.path.relpath(root, src_dir)
                 c_file_name = file.replace('.s', '.c')
-                c_file_path = os.path.join(dst_dir, relative_path, "vector_" + c_file_name)
+                c_file_path = os.path.join(dst_dir, relative_path, c_file_name)
                 
                 # Создаем директорию, если она не существует
                 os.makedirs(os.path.dirname(c_file_path), exist_ok=True)

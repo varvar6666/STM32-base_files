@@ -1,9 +1,5 @@
 #include <stdint.h>
 
-void Default_Handler(void) {
-	while(1) {}
-}
-
 void Reset_Handler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void NMI_Handler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void HardFault_Handler(void)						__attribute__ ((weak, alias("Default_Handler")));
@@ -32,7 +28,7 @@ void DMA1_Channel4_IRQHandler(void)						__attribute__ ((weak, alias("Default_Ha
 void DMA1_Channel5_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void DMA1_Channel6_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void DMA1_Channel7_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
-void ADC1_2_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
+void ADC1_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void EXTI9_5_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void TIM9_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void TIM10_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
@@ -51,6 +47,9 @@ void USART2_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")
 void USART3_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void EXTI15_10_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void RTC_Alarm_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
+void TIM12_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
+void TIM13_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
+void TIM14_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void FSMC_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void TIM5_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void SPI3_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
@@ -100,7 +99,7 @@ uint32_t vector_table[] = {
 	(uint32_t) DMA1_Channel5_IRQHandler,
 	(uint32_t) DMA1_Channel6_IRQHandler,
 	(uint32_t) DMA1_Channel7_IRQHandler,
-	(uint32_t) ADC1_2_IRQHandler,
+	(uint32_t) ADC1_IRQHandler,
 	(uint32_t) 0,
 	(uint32_t) 0,
 	(uint32_t) 0,
@@ -124,7 +123,14 @@ uint32_t vector_table[] = {
 	(uint32_t) USART3_IRQHandler,
 	(uint32_t) EXTI15_10_IRQHandler,
 	(uint32_t) RTC_Alarm_IRQHandler,
+	(uint32_t) 0,
+	(uint32_t) TIM12_IRQHandler,
+	(uint32_t) TIM13_IRQHandler,
+	(uint32_t) TIM14_IRQHandler,
+	(uint32_t) 0,
+	(uint32_t) 0,
 	(uint32_t) FSMC_IRQHandler,
+	(uint32_t) 0,
 	(uint32_t) TIM5_IRQHandler,
 	(uint32_t) SPI3_IRQHandler,
 	(uint32_t) UART4_IRQHandler,

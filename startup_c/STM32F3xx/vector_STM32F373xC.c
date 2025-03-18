@@ -1,9 +1,5 @@
 #include <stdint.h>
 
-void Default_Handler(void) {
-	while(1) {}
-}
-
 void Reset_Handler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void NMI_Handler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void HardFault_Handler(void)						__attribute__ ((weak, alias("Default_Handler")));
@@ -72,7 +68,7 @@ void DMA2_Channel5_IRQHandler(void)						__attribute__ ((weak, alias("Default_Ha
 void SDADC1_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void SDADC2_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void SDADC3_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
-void COMP1_2_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
+void COMP_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void USB_HP_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void USB_LP_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void USBWakeUp_IRQHandler(void)						__attribute__ ((weak, alias("Default_Handler")));
@@ -161,7 +157,7 @@ uint32_t vector_table[] = {
 	(uint32_t) SDADC1_IRQHandler,
 	(uint32_t) SDADC2_IRQHandler,
 	(uint32_t) SDADC3_IRQHandler,
-	(uint32_t) COMP1_2_IRQHandler,
+	(uint32_t) COMP_IRQHandler,
 	(uint32_t) 0,
 	(uint32_t) 0,
 	(uint32_t) 0,
