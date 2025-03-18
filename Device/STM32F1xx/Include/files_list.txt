@@ -1,0 +1,16 @@
+stm32f100xb.h
+stm32f100xe.h
+stm32f101x6.h
+stm32f101xb.h
+stm32f101xe.h
+stm32f101xg.h
+stm32f102x6.h
+stm32f102xb.h
+stm32f103x6.h
+stm32f103xb.h
+stm32f103xe.h
+stm32f103xg.h
+stm32f105xc.h
+stm32f107xc.h
+stm32f1xx.h
+system_stm32f1xx.h

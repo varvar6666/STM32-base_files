@@ -1,0 +1,13 @@
+vector_stm32g411xb.c
+vector_stm32g411xc.c
+vector_stm32g414xx.c
+vector_stm32g431xx.c
+vector_stm32g441xx.c
+vector_stm32g471xx.c
+vector_stm32g473xx.c
+vector_stm32g474xx.c
+vector_stm32g483xx.c
+vector_stm32g484xx.c
+vector_stm32g491xx.c
+vector_stm32g4a1xx.c
+vector_stm32gbk1cb.c

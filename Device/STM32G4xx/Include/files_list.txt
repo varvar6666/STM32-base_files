@@ -1,0 +1,12 @@
+stm32g431xx.h
+stm32g441xx.h
+stm32g471xx.h
+stm32g473xx.h
+stm32g474xx.h
+stm32g483xx.h
+stm32g484xx.h
+stm32g491xx.h
+stm32g4a1xx.h
+stm32g4xx.h
+stm32gbk1cb.h
+system_stm32g4xx.h

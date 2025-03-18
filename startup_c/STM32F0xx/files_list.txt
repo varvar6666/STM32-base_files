@@ -1,0 +1,16 @@
+vector_stm32f030x6.c
+vector_stm32f030x8.c
+vector_stm32f030xc.c
+vector_stm32f031x6.c
+vector_stm32f038xx.c
+vector_stm32f042x6.c
+vector_stm32f048xx.c
+vector_stm32f051x8.c
+vector_stm32f058xx.c
+vector_stm32f070x6.c
+vector_stm32f070xb.c
+vector_stm32f071xb.c
+vector_stm32f072xb.c
+vector_stm32f078xx.c
+vector_stm32f091xc.c
+vector_stm32f098xx.c
