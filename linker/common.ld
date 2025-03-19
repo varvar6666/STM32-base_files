@@ -4,6 +4,9 @@ ENTRY(Reset_Handler)
 
 __end_stack = ORIGIN(RAM) + LENGTH(RAM);
 
+_Min_Heap_Size = 0x200; /* required amount of heap */
+_Min_Stack_Size = 0x400; /* required amount of stack */
+
 SECTIONS {
     /* Put startup code into FLASH, ALWAYS DO THIS FIRST */
     .isr_vector : {
@@ -112,8 +115,8 @@ SECTIONS {
         . = ALIGN(4);
         PROVIDE ( end = . );
         PROVIDE ( _end = . );
-        . = . + 0x200;
-        . = . + 0x400;
+        . = . + _Min_Heap_Size;
+        . = . + _Min_Stack_Size;
         . = ALIGN(4);
     } > RAM
 
