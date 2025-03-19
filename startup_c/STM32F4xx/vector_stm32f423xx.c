@@ -1,5 +1,11 @@
 #include <stdint.h>
 
+void Default_Handler(void) {
+	while(1) {}
+}
+
+extern uint32_t __end_stack;
+
 void Reset_Handler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void NMI_Handler(void)						__attribute__ ((weak, alias("Default_Handler")));
 void HardFault_Handler(void)						__attribute__ ((weak, alias("Default_Handler")));
@@ -109,7 +115,7 @@ void DFSDM2_FLT3_IRQHandler(void)						__attribute__ ((weak, alias("Default_Hand
 
 __attribute__ ((section(".isr_vector")))
 uint32_t vector_table[] = {
-    (uint32_t) __end_stack,
+	(uint32_t) &__end_stack,
 	(uint32_t) Reset_Handler,
 	(uint32_t) NMI_Handler,
 	(uint32_t) HardFault_Handler,

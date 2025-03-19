@@ -16,6 +16,11 @@ def generate_c_file(handlers, c_file_path):
     with open(c_file_path, 'w') as c_file:
         # Записываем стандартный заголовок
         c_file.write("#include <stdint.h>\n\n")
+        c_file.write("void Default_Handler(void) {\n")
+        c_file.write("	while(1) {}\n")
+        c_file.write("}\n\n")
+        
+        c_file.write("extern uint32_t __end_stack;\n\n")
 
         # Генерируем weak-алиасы для обработчиков, исключая __end_stack и 0
         for handler in handlers:
@@ -28,7 +33,7 @@ def generate_c_file(handlers, c_file_path):
         
         # Первый элемент — __end_stack
         if handlers and ( handlers[0] == "__end_stack" or handlers[0] == "_estack"):
-            c_file.write(f"    (uint32_t) __end_stack,\n")
+            c_file.write(f"	(uint32_t) &__end_stack,\n")
             handlers = handlers[1:]  # Убираем __end_stack из списка обработчиков
         
         # Остальные элементы таблицы
