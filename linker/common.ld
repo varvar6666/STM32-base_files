@@ -2,7 +2,7 @@ OUTPUT_FORMAT("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 
 ENTRY(Reset_Handler)
 
-__end_stack = ORIGIN(RAM) + LENGTH(RAM);
+_estack = ORIGIN(RAM) + LENGTH(RAM);
 
 _Min_Heap_Size = 0x200; /* required amount of heap */
 _Min_Stack_Size = 0x400; /* required amount of stack */
@@ -71,31 +71,31 @@ SECTIONS {
         PROVIDE_HIDDEN(__fini_array_end = .);
     } > FLASH
 
-    __data_flash_start = LOADADDR(.data);
+    _sidata = LOADADDR(.data);
 
     .data : {
         . = ALIGN(4);
-        __data_start = .;
+        _sdata = .;
 
         *(.data)
         *(.data*)
 
         . = ALIGN(4);
-        __data_end = .;
+        _edata = .;
     } > RAM AT> FLASH
 
     .bss : {
         . = ALIGN(4);
-        __bss_start = .;
-        __bss_start__ = __bss_start;
+        _sbss = .;
+        __bss_start__ = _sbss;
 
         *(.bss)
         *(.bss*)
         *(COMMON)
 
         . = ALIGN(4);
-        __bss_end = .;
-        __bss_end__ = __bss_end;
+        _ebss = .;
+        __bss_end__ = _ebss;
     } > RAM
 
     __cmmdata_flash_start = LOADADDR(.ccmram);

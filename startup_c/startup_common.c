@@ -1,22 +1,39 @@
 #include <stdint.h>
 
-void Default_Handler(void) {
-	while(1) {}
+extern uint32_t _sdata; // start address of .data section in RAM
+extern uint32_t _edata; // end address of .data section in RAM
+extern uint32_t _sidata; // start address of .data section in FLASH
+extern uint32_t _sbss; // start address of .bss section in RAM
+extern uint32_t _ebss; // end address of .bss section in RAM
+
+/* declaration main function */
+int main(void);
+
+void __libc_init_array(void);
+
+void Reset_Handler(void) {
+	// copy .data section from flash to ram
+	/* Copy the data segment initializers from flash to SRAM */
+	uint32_t size = (uint32_t)&_edata - (uint32_t)&_sdata;
+	uint8_t *pRAM = (uint8_t*)&_sdata;
+	uint8_t *pFlash = (uint8_t*)&_sidata;
+
+	for(uint32_t i=0; i<size; i++) {
+		pRAM[i] = pFlash[i];
+	}
+
+	// initialize .bss section
+	/* Zero fill the bss segment. */
+	size = (uint32_t)&__bss_end - (uint32_t)&_sbss;
+	pRAM = (uint8_t*)&_sbss;
+
+	for(uint32_t i=0; i<size; i++) {
+		pRAM[i] = 0;
+	}
+
+	// Call static constructors
+	__libc_init_array();
+	// Call the application's entry point.
+	main();
 }
 
-extern uint32_t __end_stack;
-
-void __data_flash_start(void)						__attribute__ ((weak, alias("Default_Handler")));
-void __data_start(void)						__attribute__ ((weak, alias("Default_Handler")));
-void __data_end(void)						__attribute__ ((weak, alias("Default_Handler")));
-void __bss_start(void)						__attribute__ ((weak, alias("Default_Handler")));
-void __bss_end(void)						__attribute__ ((weak, alias("Default_Handler")));
-
-__attribute__ ((section(".isr_vector")))
-uint32_t vector_table[] = {
-	(uint32_t) __data_flash_start,
-	(uint32_t) __data_start,
-	(uint32_t) __data_end,
-	(uint32_t) __bss_start,
-	(uint32_t) __bss_end,
-};
