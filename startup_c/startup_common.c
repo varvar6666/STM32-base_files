@@ -24,7 +24,7 @@ void Reset_Handler(void) {
 
 	// initialize .bss section
 	/* Zero fill the bss segment. */
-	size = (uint32_t)&__bss_end - (uint32_t)&_sbss;
+	size = (uint32_t)&_ebss - (uint32_t)&_sbss;
 	pRAM = (uint8_t*)&_sbss;
 
 	for(uint32_t i=0; i<size; i++) {
