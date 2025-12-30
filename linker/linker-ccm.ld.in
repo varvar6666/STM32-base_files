@@ -1,0 +1,223 @@
+/* ============================================================
+ *  Safe STM32 linker script with CCMRAM (FLASH + RAM + CCMRAM)
+ *  Compatible with STM32CubeMX startup code
+ * ============================================================ */
+
+ENTRY(Reset_Handler)
+
+/* ============================================================
+ *  Memory layout (filled by CMake)
+ * ============================================================ */
+MEMORY
+{
+  FLASH  (rx)  : ORIGIN = @FLASH_ORIGIN@,  LENGTH = @FLASH_LENGTH@
+  RAM    (xrw) : ORIGIN = @RAM_ORIGIN@,    LENGTH = @RAM_LENGTH@
+  CCMRAM (xrw) : ORIGIN = @CCM_ORIGIN@,    LENGTH = @CCM_LENGTH@
+}
+
+/* ============================================================
+ *  Heap & stack configuration (main RAM by default)
+ * ============================================================ */
+_Min_Heap_Size  = @HEAP_SIZE@;
+_Min_Stack_Size = @STACK_SIZE@;
+
+/* End of main RAM, used by startup */
+_estack = ORIGIN(RAM) + LENGTH(RAM);
+
+/* ============================================================
+ *  Sections
+ * ============================================================ */
+SECTIONS
+{
+  /* ----------------------------------------------------------
+   *  Interrupt vector table
+   * ---------------------------------------------------------- */
+  .isr_vector :
+  {
+    . = ALIGN(4);
+    KEEP(*(.isr_vector))
+    . = ALIGN(4);
+  } > FLASH
+
+  /* ----------------------------------------------------------
+   *  Program code
+   * ---------------------------------------------------------- */
+  .text :
+  {
+    . = ALIGN(4);
+
+    *(.text)
+    *(.text*)
+    *(.glue_7)
+    *(.glue_7t)
+    *(.eh_frame)
+
+    KEEP(*(.init))
+    KEEP(*(.fini))
+
+    . = ALIGN(4);
+    _etext = .;
+  } > FLASH
+
+  /* ----------------------------------------------------------
+   *  Read-only data
+   * ---------------------------------------------------------- */
+  .rodata :
+  {
+    . = ALIGN(4);
+    *(.rodata)
+    *(.rodata*)
+    . = ALIGN(4);
+  } > FLASH
+
+  /* ----------------------------------------------------------
+   *  ARM exception tables (C++)
+   * ---------------------------------------------------------- */
+  .ARM.extab :
+  {
+    . = ALIGN(4);
+    *(.ARM.extab* .gnu.linkonce.armextab.*)
+    . = ALIGN(4);
+  } > FLASH
+
+  .ARM.exidx :
+  {
+    . = ALIGN(4);
+    __exidx_start = .;
+    *(.ARM.exidx*)
+    __exidx_end = .;
+    . = ALIGN(4);
+  } > FLASH
+
+  /* ----------------------------------------------------------
+   *  C++ ctors/dtors
+   * ---------------------------------------------------------- */
+  .preinit_array :
+  {
+    . = ALIGN(4);
+    PROVIDE_HIDDEN(__preinit_array_start = .);
+    KEEP(*(.preinit_array*))
+    PROVIDE_HIDDEN(__preinit_array_end = .);
+    . = ALIGN(4);
+  } > FLASH
+
+  .init_array :
+  {
+    . = ALIGN(4);
+    PROVIDE_HIDDEN(__init_array_start = .);
+    KEEP(*(SORT(.init_array.*)))
+    KEEP(*(.init_array*))
+    PROVIDE_HIDDEN(__init_array_end = .);
+    . = ALIGN(4);
+  } > FLASH
+
+  .fini_array :
+  {
+    . = ALIGN(4);
+    PROVIDE_HIDDEN(__fini_array_start = .);
+    KEEP(*(SORT(.fini_array.*)))
+    KEEP(*(.fini_array*))
+    PROVIDE_HIDDEN(__fini_array_end = .);
+    . = ALIGN(4);
+  } > FLASH
+
+  /* ----------------------------------------------------------
+   *  Initialized data in main RAM
+   * ---------------------------------------------------------- */
+  _sidata = LOADADDR(.data);
+
+  .data : AT (ADDR(.text) + SIZEOF(.text))
+  {
+    . = ALIGN(4);
+    _sdata = .;
+    __data_start__ = _sdata;
+
+    *(.data)
+    *(.data*)
+    *(.RamFunc)
+    *(.RamFunc*)
+
+    . = ALIGN(4);
+    _edata = .;
+    __data_end__ = _edata;
+  } > RAM
+
+  /* ----------------------------------------------------------
+   *  Initialized data in CCMRAM (explicit opt-in)
+   *  Put variables with: __attribute__((section(".ccmram")))
+   * ---------------------------------------------------------- */
+  _siccm = LOADADDR(.ccmram);
+
+  .ccmram : AT (LOADADDR(.data) + SIZEOF(.data))
+  {
+    . = ALIGN(4);
+    __ccmram_start__ = .;
+
+    *(.ccmram)
+    *(.ccmram*)
+
+    . = ALIGN(4);
+    __ccmram_end__ = .;
+  } > CCMRAM
+
+  /* ----------------------------------------------------------
+   *  Uninitialized data in main RAM
+   * ---------------------------------------------------------- */
+  .bss :
+  {
+    . = ALIGN(4);
+    _sbss = .;
+    __bss_start__ = _sbss;
+
+    *(.bss)
+    *(.bss*)
+    *(COMMON)
+
+    . = ALIGN(4);
+    _ebss = .;
+    __bss_end__ = _ebss;
+  } > RAM
+
+  /* ----------------------------------------------------------
+   *  Uninitialized data in CCMRAM (explicit opt-in)
+   *  Put variables with: __attribute__((section(".ccmram_bss")))
+   * ---------------------------------------------------------- */
+  .ccmram_bss (NOLOAD) :
+  {
+    . = ALIGN(4);
+    __ccmram_bss_start__ = .;
+
+    *(.ccmram_bss)
+    *(.ccmram_bss*)
+
+    . = ALIGN(4);
+    __ccmram_bss_end__ = .;
+  } > CCMRAM
+
+  /* ----------------------------------------------------------
+   *  Heap and stack in main RAM (safe default)
+   * ---------------------------------------------------------- */
+  ._user_heap_stack :
+  {
+    . = ALIGN(8);
+    PROVIDE(end = .);
+    PROVIDE(_end = .);
+
+    . = . + _Min_Heap_Size;
+    . = . + _Min_Stack_Size;
+
+    . = ALIGN(8);
+  } > RAM
+
+  /* ----------------------------------------------------------
+   *  Discard unused standard libraries
+   * ---------------------------------------------------------- */
+  /DISCARD/ :
+  {
+    libc.a ( * )
+    libm.a ( * )
+    libgcc.a ( * )
+  }
+
+  .ARM.attributes 0 : { *(.ARM.attributes) }
+}
