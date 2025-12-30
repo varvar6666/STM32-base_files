@@ -1,6 +1,6 @@
 /* ============================================================
  *  Safe STM32 linker script with CCMRAM (FLASH + RAM + CCMRAM)
- *  Compatible with STM32CubeMX startup code
+ *  Compatible with STM32CubeMX / CMSIS startup code
  * ============================================================ */
 
 ENTRY(Reset_Handler)
@@ -56,7 +56,6 @@ SECTIONS
     KEEP(*(.fini))
 
     . = ALIGN(4);
-    _etext = .;
   } > FLASH
 
   /* ----------------------------------------------------------
@@ -121,12 +120,14 @@ SECTIONS
     . = ALIGN(4);
   } > FLASH
 
+  /* End of text/rodata/ctors area */
+  . = ALIGN(4);
+  _etext = .;
+
   /* ----------------------------------------------------------
    *  Initialized data in main RAM
    * ---------------------------------------------------------- */
-  _sidata = LOADADDR(.data);
-
-  .data : AT (ADDR(.text) + SIZEOF(.text))
+  .data :
   {
     . = ALIGN(4);
     _sdata = .;
@@ -140,15 +141,16 @@ SECTIONS
     . = ALIGN(4);
     _edata = .;
     __data_end__ = _edata;
-  } > RAM
+  } > RAM AT > FLASH
+
+  /* Source address for data init (used by startup) */
+  _sidata = LOADADDR(.data);
 
   /* ----------------------------------------------------------
    *  Initialized data in CCMRAM (explicit opt-in)
    *  Put variables with: __attribute__((section(".ccmram")))
    * ---------------------------------------------------------- */
-  _siccm = LOADADDR(.ccmram);
-
-  .ccmram : AT (LOADADDR(.data) + SIZEOF(.data))
+  .ccmram :
   {
     . = ALIGN(4);
     __ccmram_start__ = .;
@@ -158,7 +160,10 @@ SECTIONS
 
     . = ALIGN(4);
     __ccmram_end__ = .;
-  } > CCMRAM
+  } > CCMRAM AT > FLASH
+
+  /* Source address for CCM init (you must copy it in startup if you use it) */
+  _siccm = LOADADDR(.ccmram);
 
   /* ----------------------------------------------------------
    *  Uninitialized data in main RAM
