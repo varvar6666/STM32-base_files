@@ -5,6 +5,11 @@
 
 # RAM: up to 128 Kbytes system SRAM (+ 4 Kbytes backup SRAM) → RAM_KB = 128K
 
+set(main_cpu_PARAMS
+	-mcpu=cortex-m3
+	-mthumb
+)
+
 set(STM32F2_MAP
 
   # ----------------------------------------------------------

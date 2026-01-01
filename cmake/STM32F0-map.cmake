@@ -10,6 +10,11 @@
 # - F051: only stm32f051x8 exists → x4/x6 map to stm32f051x8 :contentReference[oaicite:3]{index=3}
 # - F071/F072: only stm32f071xb / stm32f072xb exist → x8 maps to xb :contentReference[oaicite:4]{index=4}
 
+set(main_cpu_PARAMS
+	-mcpu=cortex-m0
+	-mthumb
+)
+
 set(STM32F0_MAP
 
   # ----------------------------------------------------------

@@ -3,6 +3,13 @@
 # STM32_FULL_NAME  NAME         FLASH_KB  RAM_KB  DTCM_KB
 # ============================================================
 
+set(main_cpu_PARAMS
+	-mcpu=cortex-m7
+	-mthumb
+	-mfpu=fpv5-sp-d16
+	-mfloat-abi=hard
+)
+
 set(STM32F7_MAP
 
   # ----------------------------------------------------------
