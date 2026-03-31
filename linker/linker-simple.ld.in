@@ -11,7 +11,20 @@ ENTRY(Reset_Handler)
 MEMORY
 {
   FLASH (rx)  : ORIGIN = @FLASH_ORIGIN@, LENGTH = @FLASH_LENGTH@
-  RAM   (xrw) : ORIGIN = @RAM_ORIGIN@,   LENGTH = @RAM_LENGTH@
+  RAM   (rw)  : ORIGIN = @RAM_ORIGIN@,   LENGTH = @RAM_LENGTH@
+}
+
+/* ============================================================
+ *  ELF program headers
+ *  Explicit PHDRS prevents GNU ld from merging the code LOAD
+ *  segment (R+X) with the .data init LOAD segment (R+W) into
+ *  a single RWX segment — eliminates the binutils 2.39+ warning.
+ * ============================================================ */
+PHDRS
+{
+  flash PT_LOAD FLAGS(5);  /* PF_R(4) + PF_X(1) : code in FLASH      */
+  data  PT_LOAD FLAGS(6);  /* PF_R(4) + PF_W(2) : .data LMA in FLASH */
+  ram   PT_NULL ;          /* .bss / heap / stack — not loaded        */
 }
 
 /* ============================================================
@@ -36,7 +49,7 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.isr_vector))
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* ----------------------------------------------------------
    *  Program code
@@ -55,7 +68,7 @@ SECTIONS
     KEEP(*(.fini))
 
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* ----------------------------------------------------------
    *  Read-only data
@@ -66,7 +79,7 @@ SECTIONS
     *(.rodata)
     *(.rodata*)
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* ----------------------------------------------------------
    *  ARM exception tables (C++)
@@ -76,7 +89,7 @@ SECTIONS
     . = ALIGN(4);
     *(.ARM.extab* .gnu.linkonce.armextab.*)
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   .ARM.exidx :
   {
@@ -85,7 +98,7 @@ SECTIONS
     *(.ARM.exidx*)
     __exidx_end = .;
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* ----------------------------------------------------------
    *  C++ constructors / destructors
@@ -97,7 +110,7 @@ SECTIONS
     KEEP(*(.preinit_array*))
     PROVIDE_HIDDEN(__preinit_array_end = .);
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   .init_array :
   {
@@ -107,7 +120,7 @@ SECTIONS
     KEEP(*(.init_array*))
     PROVIDE_HIDDEN(__init_array_end = .);
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   .fini_array :
   {
@@ -117,7 +130,7 @@ SECTIONS
     KEEP(*(.fini_array*))
     PROVIDE_HIDDEN(__fini_array_end = .);
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* End of text/rodata/ctors area */
   . = ALIGN(4);
@@ -140,7 +153,7 @@ SECTIONS
     . = ALIGN(4);
     _edata = .;
     __data_end__ = _edata;
-  } > RAM AT > FLASH
+  } > RAM AT > FLASH :data
 
   /* Source address for data init (used by startup) */
   _sidata = LOADADDR(.data);
@@ -161,7 +174,7 @@ SECTIONS
     . = ALIGN(4);
     _ebss = .;
     __bss_end__ = _ebss;
-  } > RAM
+  } > RAM :ram
 
   /* ----------------------------------------------------------
    *  Heap and stack
@@ -176,7 +189,7 @@ SECTIONS
     . = . + _Min_Stack_Size;
 
     . = ALIGN(8);
-  } > RAM
+  } > RAM :ram
 
   /* ----------------------------------------------------------
    *  Discard unused standard libraries

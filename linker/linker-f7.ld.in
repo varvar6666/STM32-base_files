@@ -28,6 +28,21 @@ MEMORY
 }
 
 /* ============================================================
+ *  ELF program headers
+ *  Explicit PHDRS prevents GNU ld from merging the code LOAD
+ *  segment (R+X) with the .data init LOAD segment (R+W) into
+ *  a single RWX segment — eliminates the binutils 2.39+ warning.
+ * ============================================================ */
+PHDRS
+{
+  flash   PT_LOAD FLAGS(5);  /* PF_R(4) + PF_X(1) : code in FLASH         */
+  itcm    PT_LOAD FLAGS(5);  /* PF_R(4) + PF_X(1) : .itcm_text LMA FLASH  */
+  data    PT_LOAD FLAGS(6);  /* PF_R(4) + PF_W(2) : .data LMA in FLASH    */
+  dtcm    PT_LOAD FLAGS(6);  /* PF_R(4) + PF_W(2) : .dtcm_data LMA FLASH  */
+  ram     PT_NULL ;          /* .bss / heap / stack — not loaded           */
+}
+
+/* ============================================================
  *  Heap & stack (safe default: SRAM1)
  * ============================================================ */
 _Min_Heap_Size  = @HEAP_SIZE@;
@@ -49,7 +64,7 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.isr_vector))
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* ----------------------------------------------------------
    *  Program code in FLASH (default)
@@ -68,7 +83,7 @@ SECTIONS
     KEEP(*(.fini))
 
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* ----------------------------------------------------------
    *  Read-only data
@@ -79,7 +94,7 @@ SECTIONS
     *(.rodata)
     *(.rodata*)
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* ----------------------------------------------------------
    *  ARM exception tables (C++)
@@ -89,7 +104,7 @@ SECTIONS
     . = ALIGN(4);
     *(.ARM.extab* .gnu.linkonce.armextab.*)
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   .ARM.exidx :
   {
@@ -98,7 +113,7 @@ SECTIONS
     *(.ARM.exidx*)
     __exidx_end = .;
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* ----------------------------------------------------------
    *  C++ ctors/dtors
@@ -110,7 +125,7 @@ SECTIONS
     KEEP(*(.preinit_array*))
     PROVIDE_HIDDEN(__preinit_array_end = .);
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   .init_array :
   {
@@ -120,7 +135,7 @@ SECTIONS
     KEEP(*(.init_array*))
     PROVIDE_HIDDEN(__init_array_end = .);
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   .fini_array :
   {
@@ -130,7 +145,7 @@ SECTIONS
     KEEP(*(.fini_array*))
     PROVIDE_HIDDEN(__fini_array_end = .);
     . = ALIGN(4);
-  } > FLASH
+  } > FLASH :flash
 
   /* End of FLASH resident area */
   . = ALIGN(4);
@@ -151,7 +166,7 @@ SECTIONS
 
     . = ALIGN(4);
     __itcm_text_end__ = .;
-  } > ITCM AT > FLASH
+  } > ITCM AT > FLASH :itcm
   _siitcm = LOADADDR(.itcm_text);
 
   /* ----------------------------------------------------------
@@ -171,7 +186,7 @@ SECTIONS
     . = ALIGN(4);
     _edata = .;
     __data_end__ = _edata;
-  } > SRAM1 AT > FLASH
+  } > SRAM1 AT > FLASH :data
   _sidata = LOADADDR(.data);
 
   /* ----------------------------------------------------------
@@ -189,7 +204,7 @@ SECTIONS
 
     . = ALIGN(4);
     __dtcm_data_end__ = .;
-  } > DTCM AT > FLASH
+  } > DTCM AT > FLASH :dtcm
   _sidtcm = LOADADDR(.dtcm_data);
 
   /* ----------------------------------------------------------
@@ -208,7 +223,7 @@ SECTIONS
     . = ALIGN(4);
     _ebss = .;
     __bss_end__ = _ebss;
-  } > SRAM1
+  } > SRAM1 :ram
 
   /* ----------------------------------------------------------
    *  Explicit uninitialized fast data in DTCM (opt-in)
@@ -224,7 +239,7 @@ SECTIONS
 
     . = ALIGN(4);
     __dtcm_bss_end__ = .;
-  } > DTCM
+  } > DTCM :ram
 
   /* ----------------------------------------------------------
    *  Optional SRAM2 region usage (opt-in)
@@ -240,7 +255,7 @@ SECTIONS
 
     . = ALIGN(4);
     __sram2_bss_end__ = .;
-  } > SRAM2
+  } > SRAM2 :ram
 
   /* ----------------------------------------------------------
    *  Heap and stack in SRAM1
@@ -255,7 +270,7 @@ SECTIONS
     . = . + _Min_Stack_Size;
 
     . = ALIGN(8);
-  } > SRAM1
+  } > SRAM1 :ram
 
   /* ----------------------------------------------------------
    *  Discard unused standard libraries
