@@ -259,3 +259,21 @@ set(STM32F4_MAP
   STM32F479VI  stm32f479xx   2048K  384K  64K
   STM32F479ZI  stm32f479xx   2048K  384K  64K
 )
+
+# ============================================================
+# STM32F4 flash sector count lookup
+#
+# Single-bank sector counts (dual-bank = count * 2).
+# Set STM32_DUAL_BANK=ON in base-setup.cmake to enable dual.
+#
+# Lookup table: FLASH_KB  SECTOR_COUNT
+# ============================================================
+set(STM32F4_SECTOR_MAP
+  #  FLASH_KB  SECTOR_COUNT
+      64        4
+      128       5
+      256       6
+      512       8
+      1024      12
+      2048      12
+)
