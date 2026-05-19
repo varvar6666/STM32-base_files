@@ -1,0 +1,12 @@
+#ifndef IRQ_REGISTRY_CONFIG_H
+#define IRQ_REGISTRY_CONFIG_H
+
+#include "irq_registry.hpp"
+
+#define IRQ_TABLE_SIZE @IRQ_TABLE_SIZE@
+
+static IIRQHandler* _irq_table[IRQ_TABLE_SIZE] = {};
+
+@IRQ_HANDLERS_CODE@
+
+#endif /* IRQ_REGISTRY_CONFIG_H */
