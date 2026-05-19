@@ -5,7 +5,7 @@
 
 #define IRQ_TABLE_SIZE @IRQ_TABLE_SIZE@
 
-static IIRQHandler* _irq_table[IRQ_TABLE_SIZE] = {};
+IIRQHandler* IRQ_Registry::_table[IRQ_TABLE_SIZE] = {};
 
 @IRQ_HANDLERS_CODE@
 
