@@ -137,5 +137,23 @@ set(STM32F7_MAP
   STM32F779AI  stm32f779xx   2048K   512K  128K
   STM32F779BI  stm32f779xx   2048K   512K  128K
   STM32F779NI  stm32f779xx   2048K   512K  128K
+)
 
+# ============================================================
+# STM32F7 flash sector count lookup
+#
+# Main-line layout: 4×32 KB + 128 KB + 256 KB×n (single bank).
+# Value-line (F730/F750, 64 KB): 4×16 KB.
+# Dual-bank (F76x/F77x 2 MB): count × 2.
+# Set STM32_DUAL_BANK=ON in base-setup.cmake to enable dual.
+#
+# Lookup table: FLASH_KB  SECTOR_COUNT
+# ============================================================
+set(STM32F7_SECTOR_MAP
+  #  FLASH_KB  SECTOR_COUNT
+      64        4
+      256       5
+      512       6
+      1024      8
+      2048      12
 )

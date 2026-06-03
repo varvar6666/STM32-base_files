@@ -75,3 +75,19 @@ set(STM32F2_MAP
   STM32F217IG  stm32f217xx  1024K   128K  -
   STM32F217ZG  stm32f217xx  1024K   128K  -
 )
+
+# ============================================================
+# STM32F2 flash sector count lookup
+#
+# Flash layout: 4×16 KB + 64 KB + 128 KB×n (single bank).
+#
+# Lookup table: FLASH_KB  SECTOR_COUNT
+# ============================================================
+set(STM32F2_SECTOR_MAP
+  #  FLASH_KB  SECTOR_COUNT
+      128       5
+      256       6
+      512       8
+      768       10
+      1024      12
+)
