@@ -28,11 +28,18 @@ set(STM32G0_MAP
   # STM32G031  (Mainstream)
   # CMSIS: stm32g031xx
   # ----------------------------------------------------------
-  STM32G031C6  stm32g031xx    32K   8K   -
+  STM32G031J4  stm32g031xx    16K   8K   -
+  STM32G031F4  stm32g031xx    16K   8K   -
+  STM32G031G4  stm32g031xx    16K   8K   -
+  STM32G031K4  stm32g031xx    16K   8K   -
+  STM32G031C4  stm32g031xx    16K   8K   -
+  
+  STM32G031J6  stm32g031xx    32K   8K   -
   STM32G031F6  stm32g031xx    32K   8K   -
   STM32G031G6  stm32g031xx    32K   8K   -
   STM32G031K6  stm32g031xx    32K   8K   -
-
+  STM32G031C6  stm32g031xx    32K   8K   -
+  
   STM32G031C8  stm32g031xx    64K   8K   -
   STM32G031F8  stm32g031xx    64K   8K   -
   STM32G031G8  stm32g031xx    64K   8K   -
